@@ -4,7 +4,7 @@
  * then a full URL will be used, eg: http://localhost/kohana/. If it only includes
  * the path, and a site_protocol is specified, the domain will be auto-detected.
  */
-$config['site_domain'] = '/kohana/';
+$config['site_domain'] = '/';
 
 /**
  * Force a default protocol to be used by the site. If no site_protocol is
@@ -116,6 +116,7 @@ $config['extension_prefix'] = 'MY_';
  */
 $config['modules'] = array
 (
+	MODPATH.'gallery',
 	// MODPATH.'auth',      // Authentication
 	// MODPATH.'kodoc',     // Self-generating documentation
 	// MODPATH.'gmaps',     // Google Maps integration
