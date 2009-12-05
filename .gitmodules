@@ -1,0 +1,3 @@
+[submodule "modules/gallery"]
+	path = modules/gallery
+	url = git@github.com:kfdm/kohana-gallery.git
