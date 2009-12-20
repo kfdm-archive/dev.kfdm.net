@@ -1,5 +1,3 @@
-modules/gallery
-modules/quotes
 application/logs/*
 error*.log
 access*.log
