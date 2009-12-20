@@ -3,4 +3,4 @@
 	url = git://github.com/kfdm/kohana-quotes.git
 [submodule "modules/gallery"]
 	path = modules/gallery
-	url = git://github.com/kfdm/kohana-gallery.git
+	url = git@github.com:kfdm/kohana-gallery.git
