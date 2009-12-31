@@ -45,3 +45,6 @@ class text extends text_Core { }
 class url extends url_Core { }
 class valid extends valid_Core { }
 class time extends time_Core {}
+
+//Extras
+class Auth extends Auth_Core { }
