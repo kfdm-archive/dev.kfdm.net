@@ -19,6 +19,7 @@
 <?php endif;?>
 		</tr>
 	</table>
+	<input type="hidden" name="next" value="<?=$next?>" />
 	<input type="submit" value="Login" />
 </form>
 <?=new View('footer')?>
