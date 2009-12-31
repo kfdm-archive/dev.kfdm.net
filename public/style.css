@@ -1,0 +1,74 @@
+@CHARSET "UTF-8";
+
+body { background-color:#000; }
+
+body nav div { color:#fff; }
+body.gallery nav div { background-color:#7f7; }
+body.quotes nav div { background-color:#9bf; }
+body.login nav div { background-color:#fc0; }
+
+body footer div { color:#fff; text-align: right; }
+body.gallery footer div { background-color:#7f7; }
+body.quotes footer div { background-color:#9bf; }
+body.login footer div { background-color:#fc0; }
+
+p.pagination { text-align: center; }
+p.pagination a { color: #000; }
+
+nav ul li {
+	color:#fff;
+	display:inline;
+	list-style:none;
+	list-style-type:none;
+	margin:0px;
+	padding:0px; 
+}
+
+nav ul li a {
+	color: #fff;
+	text-decoration: none;
+}
+
+div#container {
+	margin-left: auto;
+    margin-right: auto;
+	width:800px;
+	background-color:#fff;
+}
+
+ul.breadcrumbs li {
+	display:inline;
+	list-style:none;
+	list-style-type:none;
+	margin:0px;
+	padding:0px; 
+}
+
+ul.subgalleries ul {
+	list-style-type: none;	
+}
+
+ul.subgalleries li {
+	display: inline;
+	padding:3px;
+	width: 200px;
+	height: 200px;
+	float: left;
+	margin-left: auto;
+    margin-right: auto;
+}
+
+ul.gallery ul {
+	list-style-type: none;	
+}
+
+ul.gallery li {
+	display: inline;
+	padding:3px;
+	width: 200px;
+	height: 200px;
+	float: left;
+	text-align: center;
+	margin-left: auto;
+    margin-right: auto;
+}
