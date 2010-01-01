@@ -3,8 +3,8 @@
 class Gallery_Model extends ORM {
 	public function generate_url() {
 		if($this->id==0)
-			return '/gallery/';
-		return '/gallery/show/'.$this->id;
+			return url::site('/gallery/');
+		return url::site('/gallery/show/'.$this->id);
 	}
 	public function breadcrumbs() {
 		if($this->id == 0) return array();

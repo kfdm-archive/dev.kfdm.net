@@ -2,7 +2,7 @@
 
 class Image_Model extends ORM {
 	public function generate_url() {
-		return '/gallery/view/'.$this->id;
+		return url::site('/gallery/view/'.$this->id);
 	}
 	public function parent_gallery() {
 		return ORM::factory('gallery',$this->gallery);

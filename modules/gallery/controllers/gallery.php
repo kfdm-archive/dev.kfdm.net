@@ -37,9 +37,7 @@ class Gallery_Controller extends Controller {
 		$t->render(TRUE);
 	}
 	public function random() {
-		$result = Database::instance()->select(array('id','name'))->from('images')->orderby(NULL, 'RAND()')->limit(1)->get()->current();
-//		if(empty($_POST))
-//			url::redirect('/gallery/view/'.$result->id);
-		echo $result->name.' - /gallery/view/'.$result->id;
+		$image = ORM::factory('image')->orderby(NULL,'RAND()')->find();
+		echo $image->name.' - '.$image->generate_url();
 	}
 }
