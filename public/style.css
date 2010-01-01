@@ -15,6 +15,8 @@ body.login footer div { background-color:#fc0; }
 p.pagination { text-align: center; }
 p.pagination a { color: #000; }
 
+div#errors { color:#fff; background-color:#f00; }
+
 pre { color:#fff; background-color:#000; }
 
 nav ul li {

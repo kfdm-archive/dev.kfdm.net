@@ -24,4 +24,11 @@
 					</ul>
 				</div>
 			</nav>
+<?php if(isset($global_errors)):?>
+			<div id="errors">
+<?php 	foreach($global_errors as $k=>$v):?>
+				<div><?=$v?></div>
+<?php 	endforeach;?>
+			</div>
+<?php endif;?>
 			<div id="content">

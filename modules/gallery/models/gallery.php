@@ -25,11 +25,19 @@ class Gallery_Model extends ORM {
 			return $image->thumb();
 		}
 		//Otherwise find the first image in the gallery and use that
-		$image = ORM::factory('image')->where('gallery',$this->id)->find();
+		$image = ORM::factory('image')->where('gallery_id',$this->id)->find();
 		if($image->id==0) return '#';
 		return $image->thumb();
 	}
 	public function image_count() {
-		return ORM::factory('image')->where('gallery',$this->id)->count_all();
+		return ORM::factory('image')->where('gallery_id',$this->id)->count_all();
+	}
+	/**
+	 * 
+	 * @see ORM::find_all
+	 * @return mixed Image_Model
+	 */
+	public function images($limit = NULL, $offset = NULL) {
+		return ORM::factory('image')->where('gallery_id',$this->id)->find_all($limit,$offset);
 	}
 }

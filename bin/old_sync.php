@@ -2,6 +2,17 @@
 require_once('_cmd.php');
 
 function debug($msg) { echo $msg."\n"; }
+function mime($ext) {
+	switch(strtolower($ext)) {
+		case 'png':
+			return 'image/png';
+		case 'jpg':
+		case 'jpeg':
+			return 'image/jpeg';
+		case 'gif':
+			return 'image/gif';
+	}
+}
 
 $dbold = Database::instance('test',array(
 	'connection'=>array(
@@ -15,12 +26,8 @@ $dbold = Database::instance('test',array(
 	)));
 $dbnew = Database::instance();
 
-//Clear old tables
-$dbnew->query('TRUNCATE `galleries`');
-$dbnew->query('TRUNCATE `images`');
-$dbnew->query('TRUNCATE `quotes`');
-
 debug('Galleries');
+$dbnew->query('TRUNCATE `galleries`');
 foreach($dbold->query('SELECT * FROM `gallery_galleries`') as $row) {
 //	var_dump($row); break;
 	debug(' - Adding '.$row->name);
@@ -37,21 +44,38 @@ foreach($dbold->query('SELECT * FROM `gallery_galleries`') as $row) {
 
 debug('');
 debug('Images');
+$dbnew->query('TRUNCATE `images`');
 foreach($dbold->query('SELECT * FROM `gallery_images`') as $row) {
 //	var_dump($row); break;
 	debug(' - Adding '.$row->name);
+	
+	$parts = explode('.',$row->image);
+	$mime = mime($parts[1]);
+	$parts = explode('_',$parts[0]);
+	$uploaded_on = $parts[0];
+	$uploaded_by = $parts[1];
+	
 	$dbnew->insert('images',array(
 		'id'				=> $row->id,
-		'gallery'			=> $row->gallery,
-		'thumb'				=> $row->thumb,
-		'image'				=> $row->image,
+		'gallery_id'		=> $row->gallery,
 		'name'				=> $row->name,
 		'description'		=> $row->description,
+		'mime'				=> $mime,
+		'uploaded_on'		=> $uploaded_on,
+		'uploaded_by'		=> $uploaded_by,
 	));
+	$old_file = Kohana::config('gallery.import_dir').$row->image;
+	if(!file_exists($old_file)) continue;
+	$image = ORM::factory('image',$row->id);
+	$image->replace_uploaded_file($old_file);
+	$image->generate_thumb();
 }
+
+exit();
 
 debug('');
 debug('Quotes');
+$dbnew->query('TRUNCATE `quotes`');
 foreach($dbold->query('SELECT * FROM `quotes`') as $row) {
 //	var_dump($row); break;
 	debug(' - Adding quote #'.$row->id);

@@ -38,4 +38,7 @@ Gallery: <?=$gallery->name?>
 <div style="clear:both;"></div>
 <?=$pagination->render('digg')?>
 <?php endif;?>
+
+<?php if(Auth::instance()->logged_in('login')) echo new View('gallery/_upload_form',array('gallery'=>$gallery));?>
+
 <?=new View('footer')?>
