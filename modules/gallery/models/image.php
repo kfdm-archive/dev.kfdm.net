@@ -38,6 +38,12 @@ class Image_Model extends ORM {
 				return '';
 		}
 	}
+	public function rotate($degrees) {
+		$image = new Image($this->get_image_path());
+		$image->rotate($degrees);
+		$image->save($this->get_image_path());
+		$this->generate_thumb();
+	}
 	public function generate_thumb() {
 		$image = new Image($this->get_image_path());
 		$image->resize(200,200);
