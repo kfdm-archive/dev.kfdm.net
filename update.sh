@@ -7,7 +7,6 @@ cd $script_path
 
 #Update From Git
 echo "---Update Master---"
+git stash
 git pull --rebase origin master
-
-echo "---Update submodules---"
-git submodule update
+git stash apply
