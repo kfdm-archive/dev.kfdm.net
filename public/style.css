@@ -72,3 +72,11 @@ ul.gallery li {
 	margin-left: auto;
     margin-right: auto;
 }
+
+img.image {
+	max-width:700px;
+	max-height:700px;
+	display: block;
+	margin-left: auto;
+    margin-right: auto;
+}
