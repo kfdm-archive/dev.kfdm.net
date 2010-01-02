@@ -13,6 +13,7 @@
 Sub Galleries
 <ul class="subgalleries">
 <?php foreach($subgalleries as $g): ?>
+<?php 	if(!$g->is_visible()) continue;?>
 	<li>
 		<a href="<?=$g->generate_url()?>" title="<?=$g->name?>" >
 			<img src="<?=$g->thumb()?>" alt="<?=$g->name?>"/>

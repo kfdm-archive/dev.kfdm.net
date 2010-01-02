@@ -32,6 +32,18 @@ class Gallery_Model extends ORM {
 	public function image_count() {
 		return ORM::factory('image')->where('gallery_id',$this->id)->count_all();
 	}
+	public function is_visible() {
+		$private = $this->is_private();
+		if(!$private) return TRUE;
+		$auth = Auth::instance()->logged_in('login');
+		if(!$auth) return FALSE;
+		return TRUE;
+	}
+	public function is_private() {
+		return ($this->private)?
+			TRUE:
+			FALSE;
+	}
 	/**
 	 * 
 	 * @see ORM::find_all
