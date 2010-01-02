@@ -40,6 +40,12 @@ div#container {
 	background-color:#fff;
 }
 
+div#content {
+	padding-left: 1em;
+	padding-right: 1em;
+	padding-bottom: 1em;
+}
+
 ul.breadcrumbs li {
 	display:inline;
 	list-style:none;
