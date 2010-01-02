@@ -18,7 +18,7 @@
 				<dt>Name</dt>
 				<dd><input name="name" <?=isset($_POST['name'])?'value="'.htmlspecialchars($_POST['name']).'"':''?> />
 				<dt>File</dt>
-				<dd><input name="url" /></dd>
+				<dd><input name="file" /></dd>
 			</dl>
 			<input name="link_image" type="submit" value="Upload" />
 		</fieldset>

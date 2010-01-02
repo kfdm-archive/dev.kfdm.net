@@ -5,11 +5,20 @@ class Gallery_Controller extends Controller {
 	public function index() {
 		$this->show(0);
 	}
+	public function _client($client,$result) {
+		if($client!='client') return $result;
+		$errors = ($this->_tmpl->is_set('global_errors'))?
+			$this->_tmpl->global_errors:
+			array();
+		var_dump($errors);
+		exit();
+	}
 	public function show($id,$page=0) {
 		$this->_tmpl = new View('gallery');
 		
 		$gallery = ORM::factory('gallery',$id);
-		if(isset($_POST['upload_image'])) $this->_upload_image($gallery);
+		if(isset($_POST['upload_image'])) $this->_client($_POST['upload_image'],$this->_upload_image($gallery));
+		if(isset($_POST['link_image'])) $this->_client($_POST['link_image'],$this->_link_image($gallery)); 
 		$subgalleries = ORM::factory('gallery')->where('parent',$id)->find_all();
 		
 		$pagination = new Pagination(array(
@@ -49,7 +58,49 @@ class Gallery_Controller extends Controller {
 		$errors[] = $string;
 		$this->_tmpl->set_global('global_errors',$errors);
 	}
+	protected function _link_image($gallery) {
+		if($_POST['link_image']=='client') define('CLIENT_POST',TRUE); 
+		if(defined('CLIENT_POST')) $this->_use_text_errors();
+		
+		if(isset($_POST['username']) && isset($_POST['password']))
+			Auth::instance()->login($_POST['username'],$_POST['password']);
+		if(!Auth::instance()->logged_in('login'))
+			return $this->_append_error('Image upload requires login');
+		
+		if($this->input->post('name')=='')
+			$this->_append_error('Missing Image Name');
+		if($this->input->post('file')=='')
+			$this->_append_error('Missing File Name');
+		if($this->_tmpl->is_set('global_errors')) return;
+		
+		$tmp = file::download($_POST['file']);
+		
+		$image = ORM::factory('image');
+		$image->gallery_id = $gallery->id;
+		$image->name = $this->input->post('name');
+		$image->mime = file::mime($tmp);
+		$image->description = $_POST['file'];
+		$image->size = filesize($tmp);
+		$image->uploaded_on = time();
+		$image->uploaded_by = Auth::instance()->get_user()->id;
+		if(!$image->validate())
+			return $this->_append_error('Error validating Image');
+		
+		if(!$image->replace_uploaded_file($tmp))
+			return $this->_append_error('Error moving Image');
+		
+		if(!$image->save())
+			return $this->_append_error('Error saving Image');
+			
+		if(!$image->generate_thumb())
+			return $this->_append_error('Error generating thumb');
+		
+		if(!defined('CLIENT_POST')) return;
+		die($image->generate_url()."\n");
+	}
 	protected function _upload_image($gallery) {
+		if(isset($_POST['username']) && isset($_POST['password']))
+			Auth::instance()->login($_POST['username'],$_POST['password']);
 		if(!Auth::instance()->logged_in('login'))
 			return $this->_append_error('Image upload requires login');
 		if(empty($_FILES['file']))

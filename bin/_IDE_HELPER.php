@@ -9,7 +9,7 @@
 class Archive extends Archive_Core { }
 class Cache extends Cache_Core { }
 class Calendar extends Calendar_Core { }
-class Controller extends Controller_Core { }
+//class Controller extends Controller_Core { }
 class Database extends Database_Core { }
 class Encrypt extends Encrypt_Core { }
 class Image extends Image_Core { }
@@ -47,4 +47,4 @@ class valid extends valid_Core { }
 class time extends time_Core {}
 
 //Extras
-class Auth extends Auth_Core { }
+//class Auth extends Auth_Core { }
