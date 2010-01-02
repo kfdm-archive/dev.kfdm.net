@@ -51,13 +51,6 @@ class Gallery_Controller extends Controller {
 		$image = ORM::factory('image')->orderby(NULL,'RAND()')->find();
 		echo $image->name.' - '.$image->generate_url();
 	}
-	protected function _append_error($string) {
-		$errors = $this->_tmpl->is_set('global_errors')?
-			$this->_tmpl->global_errors:
-			array();
-		$errors[] = $string;
-		$this->_tmpl->set_global('global_errors',$errors);
-	}
 	protected function _link_image($gallery) {
 		if($_POST['link_image']=='client') define('CLIENT_POST',TRUE); 
 		if(defined('CLIENT_POST')) $this->_use_text_errors();
@@ -65,13 +58,12 @@ class Gallery_Controller extends Controller {
 		if(isset($_POST['username']) && isset($_POST['password']))
 			Auth::instance()->login($_POST['username'],$_POST['password']);
 		if(!Auth::instance()->logged_in('login'))
-			return $this->_append_error('Image upload requires login');
-		
+			return View::global_error('Image upload requires login');
 		if($this->input->post('name')=='')
-			$this->_append_error('Missing Image Name');
+			View::global_error('Missing Image Name');
 		if($this->input->post('file')=='')
-			$this->_append_error('Missing File Name');
-		if($this->_tmpl->is_set('global_errors')) return;
+			View::global_error('Missing File Name');
+		if(View::errors_set()) return;
 		
 		$tmp = file::download($_POST['file']);
 		
@@ -84,16 +76,16 @@ class Gallery_Controller extends Controller {
 		$image->uploaded_on = time();
 		$image->uploaded_by = Auth::instance()->get_user()->id;
 		if(!$image->validate())
-			return $this->_append_error('Error validating Image');
+			return View::global_error('Error validating Image');
 		
 		if(!$image->replace_uploaded_file($tmp))
-			return $this->_append_error('Error moving Image');
+			return View::global_error('Error moving Image');
 		
 		if(!$image->save())
-			return $this->_append_error('Error saving Image');
+			return View::global_error('Error saving Image');
 			
 		if(!$image->generate_thumb())
-			return $this->_append_error('Error generating thumb');
+			return View::global_error('Error generating thumb');
 		
 		if(!defined('CLIENT_POST')) return;
 		die($image->generate_url()."\n");
@@ -102,15 +94,15 @@ class Gallery_Controller extends Controller {
 		if(isset($_POST['username']) && isset($_POST['password']))
 			Auth::instance()->login($_POST['username'],$_POST['password']);
 		if(!Auth::instance()->logged_in('login'))
-			return $this->_append_error('Image upload requires login');
+			return View::global_error('Image upload requires login');
 		if(empty($_FILES['file']))
-			return $this->_append_error('Error with upload');
+			return View::global_error('Error with upload');
 		if($this->input->post('name')=='')
-			$this->_append_error('Missing Image Name');
+			View::global_error('Missing Image Name');
 		if($_FILES['file']['name']=='')
-			$this->_append_error('Missing File');
+			View::global_error('Missing File');
 		
-		if($this->_tmpl->is_set('global_errors')) return;
+		if(View::errors_set()) return;
 		
 		$image = ORM::factory('image');
 		$image->gallery_id = $gallery->id;
@@ -121,15 +113,15 @@ class Gallery_Controller extends Controller {
 		$image->uploaded_on = time();
 		$image->uploaded_by = Auth::instance()->get_user()->id;
 		if(!$image->validate())
-			return $this->_append_error('Error validating Image');
+			return View::global_error('Error validating Image');
 		
 		if(!$image->move_uploaded_file($_FILES['file']['tmp_name']))
-			return $this->_append_error('Error moving Image');
+			return View::global_error('Error moving Image');
 		
 		if(!$image->save())
-			return $this->_append_error('Error saving Image');
+			return View::global_error('Error saving Image');
 			
 		if(!$image->generate_thumb())
-			return $this->_append_error('Error generating thumb');
+			return View::global_error('Error generating thumb');
 	}
 }

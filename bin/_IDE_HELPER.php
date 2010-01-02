@@ -25,7 +25,7 @@ class Session extends Session_Core { }
 class URI extends URI_Core { }
 class User_agent extends User_agent_Core { }
 class Validation extends Validation_Core { }
-class View extends View_Core { }
+//class View extends View_Core { }
  
 // helpers
 class arr extends arr_Core { }
