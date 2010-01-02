@@ -6,7 +6,8 @@ class Quotes_Controller extends Controller {
 		$this->browse('latest',1);
 	}
 	public function show($id) {
-		if(!empty($_POST)) $this->_rate();
+		if(isset($_POST['rating'])) $this->_rate();
+		if(request::is_ajax()) die(); //Done with possible ajax calls
 		if(!is_numeric($id)) throw new Exception('INVALID ID');
 		$quote = ORM::factory('quote',$id);
 		
@@ -17,6 +18,8 @@ class Quotes_Controller extends Controller {
 	public function browse($order = 'browse', $page = 1) {
 		if(isset($_POST['rating'])) $this->_rate();
 		if(isset($_POST['submit_quote'])) $this->_submit();
+		if(request::is_ajax()) die(); //Done with possible ajax calls
+		
 		$pagination = new Pagination(array(
 			//'base_url'=>'quotes/latest/page',
 			'uri_segment'=>'page',
@@ -43,7 +46,11 @@ class Quotes_Controller extends Controller {
 	public function random() {
 		$quote = ORM::factory('quote')->orderby(NULL,'RAND()')->find();
 		header('Content-type: text/plain');
-		echo "#{$quote->id} - {$quote->quote}";
+		die(json_encode(array(
+			'id'=>$quote->id,
+			'quote'=>$quote->quote,
+			'rating'=>$quote->rating,
+		)));
 	}
 	protected function _submit() {
 		if($_POST['submit_quote']=='client') define('CLIENT_POST',TRUE); 
@@ -63,7 +70,8 @@ class Quotes_Controller extends Controller {
 		
 		if(!$quote->save()) throw new Exception('ERROR SAVING QUOTE');
 		
-		die('Quote '.$quote->id.' added');
+		header('Content-type: text/plain');
+		die(json_encode(array('result'=>'Quote '.$quote->id.' added')));
 	}
 	protected function _rate() {
 		if(!is_numeric($this->input->post('id')))
