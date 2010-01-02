@@ -55,10 +55,14 @@ class Gallery_Controller extends Controller {
 		if($_POST['link_image']=='client') define('CLIENT_POST',TRUE); 
 		if(defined('CLIENT_POST')) $this->_use_text_errors();
 		
+		if($gallery->id==0)
+			return View::global_error('Invalid Gallery id');
 		if(isset($_POST['username']) && isset($_POST['password']))
 			Auth::instance()->login($_POST['username'],$_POST['password']);
 		if(!Auth::instance()->logged_in('login'))
 			return View::global_error('Image upload requires login');
+		if($gallery->user_id!=0 && $gallery->user_id != Auth::instance()->get_user()->id)
+			return View::global_error('User not gallery owner');
 		if($this->input->post('name')=='')
 			View::global_error('Missing Image Name');
 		if($this->input->post('file')=='')
@@ -87,14 +91,23 @@ class Gallery_Controller extends Controller {
 		if(!$image->generate_thumb())
 			return View::global_error('Error generating thumb');
 		
+		$_POST = array();
+		
 		if(!defined('CLIENT_POST')) return;
 		die($image->generate_url()."\n");
 	}
 	protected function _upload_image($gallery) {
+		if($_POST['upload_image']=='client') define('CLIENT_POST',TRUE); 
+		if(defined('CLIENT_POST')) $this->_use_text_errors();
+		
+		if($gallery->id==0)
+			return View::global_error('Invalid Gallery id');
 		if(isset($_POST['username']) && isset($_POST['password']))
 			Auth::instance()->login($_POST['username'],$_POST['password']);
 		if(!Auth::instance()->logged_in('login'))
 			return View::global_error('Image upload requires login');
+		if($gallery->user_id!=0 && $gallery->user_id != Auth::instance()->get_user()->id)
+			return View::global_error('User not gallery owner');
 		if(empty($_FILES['file']))
 			return View::global_error('Error with upload');
 		if($this->input->post('name')=='')
@@ -123,5 +136,7 @@ class Gallery_Controller extends Controller {
 			
 		if(!$image->generate_thumb())
 			return View::global_error('Error generating thumb');
+			
+		$_POST = array();
 	}
 }
