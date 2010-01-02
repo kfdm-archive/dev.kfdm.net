@@ -48,8 +48,13 @@ Kohana::setup();
 restore_error_handler();
 restore_exception_handler();
 
-class Console_Controller extends Controller { var $template = 'kohana_error_disabled'; }
-Kohana::$instance = new Console_Controller();
+class Console extends Controller {
+	var $template = 'kohana_error_disabled';
+	public static function debug($message = NULL) {
+		echo $message."\n";
+	}
+}
+Kohana::$instance = new Console();
 ob_end_flush();
 
 defined('KOHANA_CONSOLE') or define('KOHANA_CONSOLE',TRUE);
