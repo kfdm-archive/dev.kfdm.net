@@ -15,7 +15,8 @@ class Quotes_Controller extends Controller {
 		$t->render(TRUE);
 	}
 	public function browse($order = 'browse', $page = 1) {
-		if(!empty($_POST)) $this->_rate();
+		if(isset($_POST['rating'])) $this->_rate();
+		if(isset($_POST['submit_quote'])) $this->_submit();
 		$pagination = new Pagination(array(
 			//'base_url'=>'quotes/latest/page',
 			'uri_segment'=>'page',
@@ -38,6 +39,31 @@ class Quotes_Controller extends Controller {
 		$t->set('quotes',$quotes);
 		$t->set('pagination',$pagination);
 		$t->render(TRUE);
+	}
+	public function random() {
+		$quote = ORM::factory('quote')->orderby(NULL,'RAND()')->find();
+		header('Content-type: text/plain');
+		echo "#{$quote->id} - {$quote->quote}";
+	}
+	protected function _submit() {
+		if($_POST['submit_quote']=='client') define('CLIENT_POST',TRUE); 
+		if(defined('CLIENT_POST')) $this->_use_text_errors();
+		
+		if(isset($_POST['username']) && isset($_POST['password']))
+			Auth::instance()->login($_POST['username'],$_POST['password']);
+		if(!Auth::instance()->logged_in('login'))
+			throw new Exception('Quote Submit requires login');
+		if($this->input->post('quote')=='')
+			View::global_error('Missing Quote');
+			
+		$quote = ORM::factory('quote');
+		$quote->quote = $this->input->post('quote');
+		$quote->postdate = time();
+		$quote->submitted_by = Auth::instance()->get_user()->id;
+		
+		if(!$quote->save()) throw new Exception('ERROR SAVING QUOTE');
+		
+		die('Quote '.$quote->id.' added');
 	}
 	protected function _rate() {
 		if(!is_numeric($this->input->post('id')))
