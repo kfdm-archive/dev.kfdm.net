@@ -13,7 +13,7 @@ class Gallery_Controller extends Controller {
 		var_dump($errors);
 		exit();
 	}
-	public function show($id,$page=0) {
+	public function show($id) {
 		$this->_tmpl = new View('gallery');
 		
 		$gallery = ORM::factory('gallery',$id);
@@ -22,7 +22,6 @@ class Gallery_Controller extends Controller {
 		$subgalleries = ORM::factory('gallery')->where('parent',$id)->find_all();
 		
 		$pagination = new Pagination(array(
-			'base_url'=>$gallery->generate_url(),
 			'uri_segment'=>'page',
 			'total_items'=>$gallery->image_count(),
 			'style'=>'digg',
