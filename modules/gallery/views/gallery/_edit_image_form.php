@@ -11,6 +11,7 @@
 			<input name="edit_image" type="submit" value="Edit Image" />
 		</fieldset>
 	</form>
+<!-- 
 	<form method="post" action="<?=$image->generate_url();?>">
 		<fieldset style="float:left">
 			<legend>Manipulate Image</legend>
@@ -18,5 +19,6 @@
 			<input name="rotate_right" type="submit" value="Rotate Image Right" />
 		</fieldset>
 	</form>
+ -->	
 	<div style="clear:both;"></div>
 </div>

@@ -51,9 +51,17 @@ class Gallery_Controller extends Controller {
 		$t->render(TRUE);
 	}
 	protected function _rotate($image,$degrees) {
+		if(isset($_POST['username']) && isset($_POST['password']))
+			Auth::instance()->login($_POST['username'],$_POST['password']);
+		if(!Auth::instance()->logged_in('login'))
+			return View::global_error('Image rotate requires login');
 		$image->rotate($degrees);
 	}
 	protected function _edit_image($image) {
+		if(isset($_POST['username']) && isset($_POST['password']))
+			Auth::instance()->login($_POST['username'],$_POST['password']);
+		if(!Auth::instance()->logged_in('login'))
+			return View::global_error('Image edit requires login');
 		$gallery = $image->parent_gallery();
 		$user = Auth::instance()->get_user();
 		if($gallery->user_id != 0 && $gallery->user_id != $user->id)
