@@ -125,6 +125,7 @@ class Gallery_Controller extends Controller {
 		if(request::is_ajax()) die(json_encode(array(
 			'id'=>$image->id,
 			'name'=>$image->name,
+			'url'=>$image->generate_url(),
 		)));
 	}
 	protected function _upload_image($gallery) {
