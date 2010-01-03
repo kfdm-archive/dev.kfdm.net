@@ -18,7 +18,9 @@ class Gallery_Controller extends Controller {
 		
 		$gallery = ORM::factory('gallery',$id);
 		if(isset($_POST['upload_image'])) $this->_client($_POST['upload_image'],$this->_upload_image($gallery));
-		if(isset($_POST['link_image'])) $this->_client($_POST['link_image'],$this->_link_image($gallery)); 
+		if(isset($_POST['link_image'])) $this->_client($_POST['link_image'],$this->_link_image($gallery));
+		if(request::is_ajax()) die(); //Done with possible ajax calls
+		
 		$subgalleries = ORM::factory('gallery')->where('parent',$id)->find_all();
 		
 		$pagination = new Pagination(array(
@@ -56,8 +58,7 @@ class Gallery_Controller extends Controller {
 		url::redirect($image->generate_url());
 	}
 	protected function _link_image($gallery) {
-		if($_POST['link_image']=='client') define('CLIENT_POST',TRUE); 
-		if(defined('CLIENT_POST')) $this->_use_text_errors();
+		if(request::is_ajax()) $this->_use_text_errors();
 		
 		if($gallery->id==0)
 			return View::global_error('Invalid Gallery id');
@@ -79,7 +80,7 @@ class Gallery_Controller extends Controller {
 		$image->gallery_id = $gallery->id;
 		$image->name = $this->input->post('name');
 		$image->mime = file::mime($tmp);
-		$image->description = $_POST['file'];
+		$image->description = isset($_POST['description'])?$_POST['description']:$_POST['file'];
 		$image->size = filesize($tmp);
 		$image->uploaded_on = time();
 		$image->uploaded_by = Auth::instance()->get_user()->id;
@@ -97,12 +98,13 @@ class Gallery_Controller extends Controller {
 		
 		$_POST = array();
 		
-		if(!defined('CLIENT_POST')) return;
-		die($image->generate_url()."\n");
+		if(request::is_ajax()) die(json_encode(array(
+			'id'=>$image->id,
+			'name'=>$image->name,
+		)));
 	}
 	protected function _upload_image($gallery) {
-		if($_POST['upload_image']=='client') define('CLIENT_POST',TRUE); 
-		if(defined('CLIENT_POST')) $this->_use_text_errors();
+		if(request::is_ajax()) $this->_use_text_errors();
 		
 		if($gallery->id==0)
 			return View::global_error('Invalid Gallery id');
