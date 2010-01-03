@@ -1,5 +1,5 @@
 <?=new View('header')?>
-<ul>
+<ul class="breadcrumbs">
 	<li><a href="/gallery/">Root</a></li>
 <?php foreach($gallery->breadcrumbs() as $g):?>
 	<li><a href="<?=$g->generate_url()?>"><?=$g->name?></a></li>
@@ -18,4 +18,7 @@
 	<dt>Description:</dt>
 	<dd><?=$image->description?></dd>
 </dl>
+
+<?php if(Auth::instance()->logged_in('login')) echo new View('gallery/_edit_image_form',array('image'=>$image));?>
+
 <?=new View('footer')?>

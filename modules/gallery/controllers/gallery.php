@@ -40,11 +40,29 @@ class Gallery_Controller extends Controller {
 		if(!is_numeric($id)) throw new Exception('INVALID ID');
 		$image = ORM::factory('image',$id);
 		$gallery = $image->parent_gallery();
+		if(isset($_POST['rotate_left'])) $this->_rotate($image,-90);
+		if(isset($_POST['rotate_right'])) $this->_rotate($image,90);
+		
+		if(isset($_POST['edit_image'])) $this->_edit_image($image,$gallery);
 		
 		$t = new View('image');
 		$t->set('gallery',$gallery);
 		$t->set('image',$image);
 		$t->render(TRUE);
+	}
+	protected function _rotate($image,$degrees) {
+		$image->rotate($degrees);
+	}
+	protected function _edit_image($image) {
+		$gallery = $image->parent_gallery();
+		$user = Auth::instance()->get_user();
+		if($gallery->user_id != 0 && $gallery->user_id != $user->id)
+			return View::global_error('User lacks edit for gallery');
+		
+		$image->name = $_POST['name'];
+		$image->description = $_POST['description'];
+		if(!$image->save())
+			return View::global_error('Error saving');
 	}
 	public function random($id = 0) {
 		$image = ORM::factory('image')->where('gallery_id',$id)->orderby(NULL,'RAND()')->find();
