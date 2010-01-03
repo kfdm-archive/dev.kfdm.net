@@ -52,11 +52,34 @@ class Login_Controller extends Controller {
 		$user = ORM::factory('user',$id);
 		if(isset($_POST['reset'])) $this->_reset_password($user);
 		if(isset($_POST['delete'])) $this->_delete_user($user);
+		if(isset($_POST['save_roles'])) $this->_update_roles($user);
 		
+		$roles = array();
+		foreach($user->roles as $role)
+			$roles[] = $role->id;
 		
 		$t = new View('login/users_view');
 		$t->set('user',$user);
+		$t->set('user_roles',$roles);
+		$t->set('roles',ORM::factory('role')->find_all());
 		return $t->render(TRUE);
+	}
+	protected function _update_roles($user) {
+		if($_POST['id'] != $user->id)
+			return View::global_error('User id mismatch');
+		
+		//Remove Roles
+		foreach($user->roles as $role)
+			if(!isset($_POST['roles'][$role->id]))
+				$user->remove($role);
+		
+		//Add New Roles
+		foreach(ORM::factory('role')->find_all() as $role)
+			if(isset($_POST['roles'][$role->id]))
+				$user->add($role);
+		
+		if(!$user->save()) return View::global_error('Error saving user');
+		View::global_notice('Roles Updated');
 	}
 	protected function _reset_password($user) {
 		if($_POST['id'] != $user->id)
@@ -67,8 +90,7 @@ class Login_Controller extends Controller {
 		$user->salt = substr(sha1(time()),0,6);
 		$user->password = $this->auth->hash_password($user->salt,$_POST['password']);
 		
-		if(!$user->save())
-			return View::global_error('Error saving user');
+		if(!$user->save()) return View::global_error('Error saving user');
 		View::global_notice('Password Updated');
 	}
 	protected function _delete_user($user) {
