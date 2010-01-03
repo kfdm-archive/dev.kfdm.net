@@ -46,9 +46,14 @@ class Gallery_Controller extends Controller {
 		$t->set('image',$image);
 		$t->render(TRUE);
 	}
-	public function random() {
-		$image = ORM::factory('image')->orderby(NULL,'RAND()')->find();
-		echo $image->name.' - '.$image->generate_url();
+	public function random($id = 0) {
+		$image = ORM::factory('image')->where('gallery_id',$id)->orderby(NULL,'RAND()')->find();
+		if(request::is_ajax()) die(json_encode(array(
+			'id'=>$image->id,
+			'name'=>$image->name,
+			'url'=>$image->generate_url(),
+		)));
+		url::redirect($image->generate_url());
 	}
 	protected function _link_image($gallery) {
 		if($_POST['link_image']=='client') define('CLIENT_POST',TRUE); 
