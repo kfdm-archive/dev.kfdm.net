@@ -5,21 +5,19 @@ class Gallery_Controller extends Controller {
 	public function index() {
 		$this->show(0);
 	}
-	public function _client($client,$result) {
-		if($client!='client') return $result;
+	public function _client() {
 		$errors = ($this->_tmpl->is_set('global_errors'))?
 			$this->_tmpl->global_errors:
 			array();
-		var_dump($errors);
-		exit();
+		die(json_encode($errors));
 	}
 	public function show($id) {
 		$this->_tmpl = new View('gallery');
 		
 		$gallery = ORM::factory('gallery',$id);
-		if(isset($_POST['upload_image'])) $this->_client($_POST['upload_image'],$this->_upload_image($gallery));
-		if(isset($_POST['link_image'])) $this->_client($_POST['link_image'],$this->_link_image($gallery));
-		if(request::is_ajax()) die(); //Done with possible ajax calls
+		if(isset($_POST['upload_image'])) $this->_upload_image($gallery);
+		if(isset($_POST['link_image'])) $this->_link_image($gallery);
+		if(request::is_ajax()) $this->_client(); //Done with possible ajax calls
 		
 		$subgalleries = ORM::factory('gallery')->where('parent',$id)->find_all();
 		
