@@ -75,6 +75,7 @@ class Gallery_Controller extends Controller {
 	public function random($id = 0) {
 		$image = ORM::factory('image')->where('gallery_id',$id)->orderby(NULL,'RAND()')->find();
 		if(request::is_ajax()) die(json_encode(array(
+			'result'=>'OK',
 			'id'=>$image->id,
 			'name'=>$image->name,
 			'url'=>$image->generate_url(),
@@ -123,6 +124,7 @@ class Gallery_Controller extends Controller {
 		$_POST = array();
 		
 		if(request::is_ajax()) die(json_encode(array(
+			'result'=>'OK',
 			'id'=>$image->id,
 			'name'=>$image->name,
 			'url'=>$image->generate_url(),

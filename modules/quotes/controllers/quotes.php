@@ -47,6 +47,7 @@ class Quotes_Controller extends Controller {
 		$quote = ORM::factory('quote')->orderby(NULL,'RAND()')->find();
 		header('Content-type: text/plain');
 		die(json_encode(array(
+			'result'=>'OK',
 			'id'=>$quote->id,
 			'quote'=>$quote->quote,
 			'rating'=>$quote->rating,
@@ -71,7 +72,7 @@ class Quotes_Controller extends Controller {
 		if(!$quote->save()) throw new Exception('ERROR SAVING QUOTE');
 		
 		header('Content-type: text/plain');
-		die(json_encode(array('result'=>'Quote '.$quote->id.' added')));
+		die(json_encode(array('result'=>'OK','message'=>'Quote '.$quote->id.' added')));
 	}
 	protected function _rate() {
 		if(!is_numeric($this->input->post('id')))
