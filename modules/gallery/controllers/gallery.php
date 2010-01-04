@@ -9,6 +9,7 @@ class Gallery_Controller extends Controller {
 		$errors = ($this->_tmpl->is_set('global_errors'))?
 			$this->_tmpl->global_errors:
 			array();
+		$errors['result'] = 'ERRORS';
 		die(json_encode($errors));
 	}
 	public function show($id) {
@@ -17,6 +18,7 @@ class Gallery_Controller extends Controller {
 		$gallery = ORM::factory('gallery',$id);
 		if(isset($_POST['upload_image'])) $this->_upload_image($gallery);
 		if(isset($_POST['link_image'])) $this->_link_image($gallery);
+		if(isset($_POST['search'])) $this->_search($gallery);
 		if(request::is_ajax()) $this->_client(); //Done with possible ajax calls
 		
 		$subgalleries = ORM::factory('gallery')->where('parent',$id)->find_all();
@@ -129,6 +131,21 @@ class Gallery_Controller extends Controller {
 			'name'=>$image->name,
 			'url'=>$image->generate_url(),
 		)));
+	}
+	protected function _search() {
+		if(request::is_ajax()) $this->_use_text_errors();
+		$query = $_POST['search'];
+		$images = ORM::factory('image')->like('name',$query)->find_all();
+		$result = array();
+		foreach($images as $i)
+			$result['images'][] = array(
+				'id'=>$i->id,
+				'name'=>$i->name,
+				'url'=>$i->generate_url(),
+			);
+		$result['result'] = 'OK';
+		$result['count'] = count($result['images']);
+		if(request::is_ajax()) die(json_encode($result));
 	}
 	protected function _upload_image($gallery) {
 		if(request::is_ajax()) $this->_use_text_errors();
