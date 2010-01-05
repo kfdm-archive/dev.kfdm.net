@@ -9,6 +9,6 @@
 	<input type="submit" name="rating" value="-" />
 </form>
 <hr />
-<?=$quote->quote?>
+<?=htmlspecialchars($quote->quote)?>
 
 <?=new View('footer')?>
