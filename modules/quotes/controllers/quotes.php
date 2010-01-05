@@ -51,6 +51,7 @@ class Quotes_Controller extends Controller {
 			'id'=>$quote->id,
 			'quote'=>$quote->quote,
 			'rating'=>$quote->rating,
+			'url'=>$quote->generate_url(),
 		)));
 	}
 	protected function _submit() {
@@ -72,7 +73,11 @@ class Quotes_Controller extends Controller {
 		if(!$quote->save()) throw new Exception('ERROR SAVING QUOTE');
 		
 		header('Content-type: text/plain');
-		die(json_encode(array('result'=>'OK','message'=>'Quote '.$quote->id.' added')));
+		die(json_encode(array(
+			'result'=>'OK',
+			'id'=>$quote->id,
+			'url'=>$quote->generate_url(),
+		)));
 	}
 	protected function _rate() {
 		if(!is_numeric($this->input->post('id')))
