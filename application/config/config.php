@@ -118,6 +118,7 @@ $config['modules'] = array
 (
 	MODPATH.'gallery',
 	MODPATH.'quotes',
+	MODPATH.'tracker',
 	MODPATH.'auth',      // Authentication
 	// MODPATH.'kodoc',     // Self-generating documentation
 	// MODPATH.'gmaps',     // Google Maps integration

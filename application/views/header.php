@@ -16,6 +16,7 @@
 					<ul>
 						<li><a href="/gallery/">Gallery</a></li>
 						<li><a href="/quotes/">Quotes</a></li>
+						<li><a href="/tracker/">Tracker</a></li>
 <?php if(Auth::instance()->logged_in()):?>
 						<li><a href="/logout/">Logout (<?=Auth::instance()->get_user()->username?>)</a></li>
 <?php else:?>

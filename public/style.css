@@ -5,12 +5,16 @@ body { background-color:#000; }
 body nav div { color:#fff; }
 body.gallery nav div { background-color:#7f7; }
 body.quotes nav div { background-color:#9bf; }
-body.login nav div { background-color:#fc0; }
+body.tracker nav div { background-color:#fc0; }
+
+body.login nav div { background-color:#868; }
 
 body footer div { color:#fff; text-align: right; }
 body.gallery footer div { background-color:#7f7; }
 body.quotes footer div { background-color:#9bf; }
-body.login footer div { background-color:#fc0; }
+body.tracker footer div { background-color:#fc0; }
+
+body.login footer div { background-color:#868; }
 
 p.pagination { text-align: center; }
 p.pagination a { color: #000; }
