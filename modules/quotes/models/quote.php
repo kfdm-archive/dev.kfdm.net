@@ -2,7 +2,7 @@
 
 class Quote_Model extends ORM {
 	public function generate_url() {
-		return '/quotes/show/'.$this->id;
+		return url::site('/quotes/show/'.$this->id);
 	}
 	public function post_date($format = NULL) {
 		if($format===NULL) $format = DATE_RFC822;
