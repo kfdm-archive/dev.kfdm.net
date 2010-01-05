@@ -54,6 +54,22 @@ class Quotes_Controller extends Controller {
 			'url'=>$quote->generate_url(),
 		)));
 	}
+	public function search() {
+		if(request::is_ajax()) $this->_use_text_errors();
+		$query = $_POST['search'];
+		$quotes = ORM::factory('quote')->like('quote',$query)->find_all();
+		$result = array();
+		foreach($quotes as $q)
+			$result['quotes'][] = array(
+				'id'=>$q->id,
+				'quote'=>$q->quote,
+				'rating'=>$q->rating,
+				'url'=>$q->generate_url(),
+			);
+		$result['result'] = 'OK';
+		$result['count'] = count($result['quotes']);
+		if(request::is_ajax()) die(json_encode($result));
+	}
 	protected function _submit() {
 		if($_POST['submit_quote']=='client') define('CLIENT_POST',TRUE); 
 		if(defined('CLIENT_POST')) $this->_use_text_errors();
