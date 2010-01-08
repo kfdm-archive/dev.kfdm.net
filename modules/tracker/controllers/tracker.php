@@ -6,6 +6,20 @@ class Tracker_Controller extends Controller {
 		$t->set('tasks',ORM::factory('task')->find_all());
 		$t->render(TRUE);
 	}
+	public function json() {
+		if(request::is_ajax()) $this->_use_json_errors();
+		$tasks = array();
+		foreach(ORM::factory('task')->find_all() as $task)
+			$tasks[] = array(
+				'id'=>$task->id,
+				'short'=>$task->short,
+				'long'=>$task->long,
+				'owner'=>$task->owner->username,
+				'reporter'=>$task->reporter->username,
+				'url'=>$task->generate_url(),
+			);
+		die(json_encode($tasks));
+	}
 	public function report() {
 		if(request::is_ajax()) $this->_use_json_errors();
 		
