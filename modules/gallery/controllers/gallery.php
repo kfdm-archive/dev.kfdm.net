@@ -136,7 +136,7 @@ class Gallery_Controller extends Controller {
 		if(request::is_ajax()) $this->_use_text_errors();
 		$query = $_POST['search'];
 		$images = ORM::factory('image')->like('name',$query)->find_all();
-		$result = array();
+		$result = array('images'=>array());
 		foreach($images as $i)
 			$result['images'][] = array(
 				'id'=>$i->id,
