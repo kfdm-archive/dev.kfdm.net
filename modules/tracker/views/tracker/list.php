@@ -1,22 +1,21 @@
 <?=View::factory('header');?>
+<?php foreach($projects as $project):?>
+<h2><?=$project->name?></h2>
 <table>
 	<tr>
 		<th>ID</th>
-		<th>Short</th>
-		<th>Long</th>
+		<th>Title</th>
+		<th>Notes</th>
 		<th>Type</th>
-		<th>Owner</th>
-		<th>Reporter</th>
 	</tr>
-<?php foreach($tasks as $task):?>
+<?php foreach($project->tasks as $task):?>
 	<tr>
 		<th><?=$task->id?></th>
-		<th><?=htmlspecialchars($task->short)?></th>
-		<th><?=htmlspecialchars($task->long)?></th>
+		<th><?=htmlspecialchars($task->title)?></th>
+		<th><?=htmlspecialchars($task->notes)?></th>
 		<th><?=htmlspecialchars($task->type)?></th>
-		<th><?=$task->owner->username?></th>
-		<th><?=$task->reporter->username?></th>
 	</tr>
 <?php endforeach;?>
 </table>
+<?php endforeach;?>
 <?=View::factory('footer');?>

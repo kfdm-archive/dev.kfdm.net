@@ -3,7 +3,7 @@
 class Tracker_Controller extends Controller {
 	public function index() {
 		$t = new View('tracker/list');
-		$t->set('tasks',ORM::factory('task')->find_all());
+		$t->set('projects',ORM::factory('project')->find_all());
 		$t->render(TRUE);
 	}
 	public function json() {
@@ -12,10 +12,8 @@ class Tracker_Controller extends Controller {
 		foreach(ORM::factory('task')->find_all() as $task)
 			$tasks[] = array(
 				'id'=>$task->id,
-				'short'=>$task->short,
-				'long'=>$task->long,
-				'owner'=>$task->owner->username,
-				'reporter'=>$task->reporter->username,
+				'short'=>$task->title,
+				'long'=>$task->notes,
 				'url'=>$task->generate_url(),
 			);
 		die(json_encode($tasks));
@@ -36,10 +34,10 @@ class Tracker_Controller extends Controller {
 		if(!in_array($type,array('request','bug'))) throw new Exception('INVALID BUG TYPE');
 		
 		$task = ORM::factory('task');
-		$task->short = $short;
-		$task->long = $long;
+		$task->title = $short;
+		$task->notes = $long;
 		$task->type = $type;
-		$task->reporter_id = Auth::instance()->get_user()->id;
+		$task->project_id = 1;
 		$task->save();
 		
 		if(request::is_ajax()) die(json_encode(array(
