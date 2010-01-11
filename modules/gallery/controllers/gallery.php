@@ -53,6 +53,7 @@ class Gallery_Controller extends Controller {
 		
 		if(isset($_POST['edit_image'])) $this->_image_edit($image,$gallery);
 		if(isset($_POST['delete_image'])) $this->_image_delete($image,$gallery);
+		if(isset($_POST['move_image'])) $this->_image_move($image,$gallery);
 		
 		$t = new View('image');
 		$t->set('gallery',$gallery);
@@ -93,6 +94,29 @@ class Gallery_Controller extends Controller {
 		url::redirect($parent->generate_url());
 		return View::global_error('DELETING GALLERY '.$gallery->name);
 	}
+	/**
+	 * Return a list of galleries for a select box
+	 * @param unknown_type $gallery
+	 * @return unknown_type
+	 */
+	protected function _gallery_select($current) {
+		$galleries = array();
+		$galleries[0] = 'root';
+		foreach($this->_gallery_select_helper(ORM::factory('gallery'),1) as $k=>$v)
+				$galleries[$k] = $v;
+		return $galleries;
+	}
+	protected function _gallery_select_helper($current,$tab) {
+		$galleries = array();
+		$tabs = str_repeat('-',$tab);
+		foreach($current->sub_galleries() as $gallery) {
+			$galleries[$gallery->id] = $tabs.$gallery->name;
+			foreach($this->_gallery_select_helper($gallery,($tab+1)) as $k=>$v)
+				$galleries[$k] = $v;
+		}
+		return $galleries;
+	}
+	
 	protected function _image_rotate($image,$degrees) {
 		if(isset($_POST['username']) && isset($_POST['password']))
 			Auth::instance()->login($_POST['username'],$_POST['password']);
@@ -114,6 +138,25 @@ class Gallery_Controller extends Controller {
 		$image->description = $_POST['description'];
 		if(!$image->save())
 			return View::global_error('Error saving');
+	}
+	protected function _image_move($image,$src) {
+		if(isset($_POST['username']) && isset($_POST['password']))
+			Auth::instance()->login($_POST['username'],$_POST['password']);
+		if(!Auth::instance()->logged_in('login'))
+			return View::global_error('Image edit requires login');
+		if(!is_numeric($this->input->post('gallery')))
+			return View::global_error('Invalid dest id');
+		$user = Auth::instance()->get_user();
+		if($src->user_id != 0 && $src->user_id != $user->id)
+			return View::global_error('User lacks edit for gallery '.$src->name);
+		$dst = ORM::factory('gallery',$_POST['gallery']);
+		if($dst->user_id != 0 && $dst->user_id != $user->id)
+			return View::global_error('User lacks edit for gallery '.$dst->name);
+		
+		$image->gallery_id = $dst->id;
+		if(!$image->save())
+			return View::global_error('Error moving image');
+		url::redirect($image->generate_url());
 	}
 	protected function _image_delete($image) {
 		if(isset($_POST['username']) && isset($_POST['password']))

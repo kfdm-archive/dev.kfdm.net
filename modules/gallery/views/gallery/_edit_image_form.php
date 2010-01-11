@@ -12,6 +12,17 @@
 			<input name="delete_image" type="submit" value="Delete Image" onclick="return confirm('Are you sure you want to delete this image?')" />
 		</fieldset>
 	</form>
+	<form method="post" action="<?=$image->generate_url();?>">
+		<fieldset style="float:left">
+			<legend>Move Image</legend>
+			<select name="gallery">
+<?php foreach($this->_gallery_select($gallery) as $k=>$v):?>
+				<option value="<?=$k?>" <?=($gallery->id==$k)?'disabled="disabled" selected="selected"':''?>><?=($gallery->id==$k)?$v.' (Current)':$v?></option>
+<?php endforeach;?>
+			</select>
+			<input name="move_image" type="submit" value="Move Image" />
+		</fieldset>
+	</form>
 <!-- 
 	<form method="post" action="<?=$image->generate_url();?>">
 		<fieldset style="float:left">

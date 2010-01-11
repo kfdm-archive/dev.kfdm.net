@@ -19,6 +19,6 @@
 	<dd><?=$image->description?></dd>
 </dl>
 
-<?php if(Auth::instance()->logged_in('login')) echo new View('gallery/_edit_image_form',array('image'=>$image));?>
+<?php if(Auth::instance()->logged_in('login')) echo new View('gallery/_edit_image_form',array('image'=>$image,'gallery'=>$gallery));?>
 
 <?=new View('footer')?>
