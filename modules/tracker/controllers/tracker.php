@@ -17,6 +17,14 @@ class Tracker_Controller extends Controller {
 			$projects[] = $project->as_array();
 		die(json_encode($projects));
 	}
+	protected function _user_select($role='login') {
+		$users = array('0'=>'Unassigned');
+		$role = ORM::factory('role',$role);
+		foreach(ORM::factory('user')->find_all() as $user)
+			if($user->has($role))
+				$users[$user->id] = $user->username;
+		return $users;
+	}
 	public function json() {
 		$tasks = array();
 		foreach(ORM::factory('task')->find_all() as $task)
@@ -53,11 +61,23 @@ class Tracker_Controller extends Controller {
 	public function task($id) {
 		if(!is_numeric($id)) throw new Exception('INVALID_ID');
 		$task = ORM::factory('task',$id);
+		if(isset($_POST['assign_task'])) $this->_task_assign($task);
 		if(request::is_ajax()) die(json_encode($task->as_array()));
 		
 		$t = new View('tracker/view');
 		$t->set('task',$task);
 		$t->render(TRUE);
+	}
+	protected function _task_assign($task) {
+		if(isset($_POST['username']) && isset($_POST['password']))
+			Auth::instance()->login($_POST['username'],$_POST['password']);
+		if(!Auth::instance()->logged_in('login'))
+			return View::global_error('Lacks Task Assign Permissions');
+		if(!is_numeric($this->input->post('owner')))
+			return View::global_error('Invalid User ID');
+		$task->owner_id = $_POST['owner'];
+		if(!$task->save())
+			return View::global_error('Error saving task');
 	}
 	public function report() {
 		if(isset($_POST['username']) && isset($_POST['password']))
