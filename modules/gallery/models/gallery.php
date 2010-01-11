@@ -1,6 +1,9 @@
 <?php defined('SYSPATH') OR die('No direct access allowed.');
 
 class Gallery_Model extends ORM {
+	public function parent_gallery() {
+		return ORM::factory('gallery',$this->parent);
+	}
 	public function generate_url() {
 		if($this->id==0)
 			return url::site('/gallery/');
@@ -51,5 +54,17 @@ class Gallery_Model extends ORM {
 	 */
 	public function images($limit = NULL, $offset = NULL) {
 		return ORM::factory('image')->where('gallery_id',$this->id)->find_all($limit,$offset);
+	}
+	public function sub_galleries() {
+		return ORM::factory('gallery')->where('parent',$this->id)->find_all();
+	}
+	public function delete() {
+		foreach($this->sub_galleries() as $gallery)
+			if(!$gallery->delete())
+				throw new Exception('ERROR DELETING Gallery:'.$gallery->id);
+		foreach($this->images() as $image)
+			if(!$image->delete())
+				throw new Exception('ERROR DELETING Image:'.$image->id);
+		return parent::delete();
 	}
 }

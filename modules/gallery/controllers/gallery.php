@@ -2,6 +2,10 @@
 
 class Gallery_Controller extends Controller {
 	const num_per_page = 9;
+	public function __construct() {
+		parent::__construct();
+		if(request::is_ajax()) $this->_use_json_errors();
+	}
 	public function index() {
 		$this->show(0);
 	}
@@ -19,9 +23,11 @@ class Gallery_Controller extends Controller {
 		if(isset($_POST['upload_image'])) $this->_upload_image($gallery);
 		if(isset($_POST['link_image'])) $this->_link_image($gallery);
 		if(isset($_POST['search'])) $this->_search($gallery);
+		if(isset($_POST['new_sub_gallery'])) $this->_new_gallery($gallery);
+		if(isset($_POST['delete_gallery'])) $this->_delete_gallery($gallery);
 		if(request::is_ajax()) $this->_client(); //Done with possible ajax calls
 		
-		$subgalleries = ORM::factory('gallery')->where('parent',$id)->find_all();
+		$subgalleries = $gallery->sub_galleries();
 		
 		$pagination = new Pagination(array(
 			'uri_segment'=>'page',
@@ -52,6 +58,40 @@ class Gallery_Controller extends Controller {
 		$t->set('gallery',$gallery);
 		$t->set('image',$image);
 		$t->render(TRUE);
+	}
+	protected function _new_gallery($parent) {
+		if(isset($_POST['username']) && isset($_POST['password']))
+			Auth::instance()->login($_POST['username'],$_POST['password']);
+		if(!Auth::instance()->logged_in('gallery_create'))
+			return View::global_error('Lacks Gallery Create Permissions');
+		$user = Auth::instance()->get_user();
+		if($parent->user_id != 0 && $parent->user_id != $user->id)
+			return View::global_error('User lacks edit for gallery');
+		if($this->input->post('name')=='')
+			return View::global_error('Missing Gallery Name');
+		
+		$gallery = ORM::factory('gallery');
+		$gallery->name = $_POST['name'];
+		$gallery->user_id = $user->id;
+		$gallery->parent = $parent->id;
+		if(!$gallery->save())
+			return View::global_error('Error saving gallery');
+			
+		url::redirect($gallery->generate_url());
+	}
+	protected function _delete_gallery($gallery) {
+		if(isset($_POST['username']) && isset($_POST['password']))
+			Auth::instance()->login($_POST['username'],$_POST['password']);
+		if(!Auth::instance()->logged_in('gallery_delete'))
+			return View::global_error('Lacks Gallery Delete Permissions');
+		$user = Auth::instance()->get_user();
+		if($gallery->user_id != 0 && $gallery->user_id != $user->id)
+			return View::global_error('User lacks edit for gallery');
+		
+		$parent = $gallery->parent_gallery();
+		$gallery->delete();
+		url::redirect($parent->generate_url());
+		return View::global_error('DELETING GALLERY '.$gallery->name);
 	}
 	protected function _rotate($image,$degrees) {
 		if(isset($_POST['username']) && isset($_POST['password']))
