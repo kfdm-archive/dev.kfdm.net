@@ -54,6 +54,7 @@ class Gallery_Controller extends Controller {
 		if(isset($_POST['edit_image'])) $this->_image_edit($image,$gallery);
 		if(isset($_POST['delete_image'])) $this->_image_delete($image,$gallery);
 		if(isset($_POST['move_image'])) $this->_image_move($image,$gallery);
+		if(isset($_POST['default_image'])) $this->_image_default($image,$gallery);
 		
 		$t = new View('image');
 		$t->set('gallery',$gallery);
@@ -157,6 +158,21 @@ class Gallery_Controller extends Controller {
 		if(!$image->save())
 			return View::global_error('Error moving image');
 		url::redirect($image->generate_url());
+	}
+	protected function _image_default($image,$gallery) {
+		if(isset($_POST['username']) && isset($_POST['password']))
+			Auth::instance()->login($_POST['username'],$_POST['password']);
+		if(!Auth::instance()->logged_in('login'))
+			return View::global_error('Image edit requires login');
+		if(!is_numeric($this->input->post('gallery')))
+			return View::global_error('Invalid dest id');
+		$user = Auth::instance()->get_user();
+		if($gallery->user_id != 0 && $gallery->user_id != $user->id)
+			return View::global_error('User lacks edit for gallery '.$gallery->name);
+		
+		$gallery->galleryimageid = $image->id;
+		if(!$gallery->save())
+			return View::global_error('Error setting default image');
 	}
 	protected function _image_delete($image) {
 		if(isset($_POST['username']) && isset($_POST['password']))

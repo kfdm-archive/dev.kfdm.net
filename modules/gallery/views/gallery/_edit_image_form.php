@@ -23,6 +23,13 @@
 			<input name="move_image" type="submit" value="Move Image" />
 		</fieldset>
 	</form>
+	<form method="post" action="<?=$image->generate_url();?>">
+		<fieldset style="float:left">
+			<legend>Set as Gallery Image</legend>
+			<input name="gallery" type="hidden" value="<?=$gallery->id?>" />
+			<input name="default_image" type="submit" value="Set as Default" />
+		</fieldset>
+	</form>
 <!-- 
 	<form method="post" action="<?=$image->generate_url();?>">
 		<fieldset style="float:left">
