@@ -9,6 +9,7 @@
 				<dd><textarea name="description"><?=htmlspecialchars($image->description);?></textarea></dd>
 			</dl>
 			<input name="edit_image" type="submit" value="Edit Image" />
+			<input name="delete_image" type="submit" value="Delete Image" onclick="return confirm('Are you sure you want to delete this image?')" />
 		</fieldset>
 	</form>
 <!-- 

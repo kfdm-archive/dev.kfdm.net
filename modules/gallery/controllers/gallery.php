@@ -46,6 +46,7 @@ class Gallery_Controller extends Controller {
 		if(isset($_POST['rotate_right'])) $this->_rotate($image,90);
 		
 		if(isset($_POST['edit_image'])) $this->_edit_image($image,$gallery);
+		if(isset($_POST['delete_image'])) $this->_delete_image($image,$gallery);
 		
 		$t = new View('image');
 		$t->set('gallery',$gallery);
@@ -73,6 +74,19 @@ class Gallery_Controller extends Controller {
 		$image->description = $_POST['description'];
 		if(!$image->save())
 			return View::global_error('Error saving');
+	}
+	protected function _delete_image($image) {
+		if(isset($_POST['username']) && isset($_POST['password']))
+			Auth::instance()->login($_POST['username'],$_POST['password']);
+		if(!Auth::instance()->logged_in('login'))
+			return View::global_error('Image edit requires login');
+		$gallery = $image->parent_gallery();
+		$user = Auth::instance()->get_user();
+		if($gallery->user_id != 0 && $gallery->user_id != $user->id)
+			return View::global_error('User lacks edit for gallery');
+		
+		$image->delete();
+		url::redirect($gallery->generate_url());
 	}
 	public function random($id = 0) {
 		$image = ORM::factory('image')->where('gallery_id',$id)->orderby(NULL,'RAND()')->find();
