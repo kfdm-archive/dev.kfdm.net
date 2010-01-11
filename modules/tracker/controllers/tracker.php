@@ -45,6 +45,12 @@ class Tracker_Controller extends Controller {
 		$t->set('projects',array($project));
 		$t->render(TRUE);
 	}
+	protected function _project_select() {
+		$projects = array();
+		foreach(ORM::factory('project')->find_all() as $project)
+			$projects[$project->id] = $project->name;
+		return $projects;
+	}
 	protected function _project_json($project) {
 		$response = $project->as_array();
 		$response['tasks'] = array();
@@ -62,6 +68,7 @@ class Tracker_Controller extends Controller {
 		if(!is_numeric($id)) throw new Exception('INVALID_ID');
 		$task = ORM::factory('task',$id);
 		if(isset($_POST['assign_task'])) $this->_task_assign($task);
+		if(isset($_POST['move_task'])) $this->_task_move($task);
 		if(request::is_ajax()) die(json_encode($task->as_array()));
 		
 		$t = new View('tracker/view');
@@ -78,6 +85,20 @@ class Tracker_Controller extends Controller {
 		$task->owner_id = $_POST['owner'];
 		if(!$task->save())
 			return View::global_error('Error saving task');
+	}
+	protected function _task_move($task) {
+		if(isset($_POST['username']) && isset($_POST['password']))
+			Auth::instance()->login($_POST['username'],$_POST['password']);
+		if(!Auth::instance()->logged_in('login'))
+			return View::global_error('Lacks Task Assign Permissions');
+		if(!is_numeric($this->input->post('project')))
+			return View::global_error('Invalid Project ID');
+		$old = $task->project_class();
+		$task->project_id = $_POST['project'];
+		if(!$task->save())
+			return View::global_error('Error saving task');
+		$old->recalculate();
+		$task->project_class()->recalculate();
 	}
 	public function report() {
 		if(isset($_POST['username']) && isset($_POST['password']))

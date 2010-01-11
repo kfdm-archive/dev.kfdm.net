@@ -5,4 +5,7 @@ class Task_Model extends ORM {
 	public function generate_url() {
 		return url::site('/tracker/task/'.$this->id);
 	}
+	public function parent_project() {
+		return ORM::factory('project',$this->project_id);
+	}
 } 

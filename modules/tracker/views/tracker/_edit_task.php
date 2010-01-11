@@ -10,4 +10,15 @@
 				<input name="assign_task" type="submit" value="Assign" />
 		</fieldset>
 	</form>
+	<form method="post" action="<?=$task->generate_url()?>">
+		<fieldset style="float:right">
+			<legend>Move to</legend>
+				<select name="project">
+<?php foreach($this->_project_select() as $k=>$v):?>
+					<option value="<?=$k?>" <?=($task->project->id==$k)?'disabled="disabled" selected="selected"':''?>><?=($task->project->id==$k)?$v.' (Current)':$v?></option>
+<?php endforeach;?>
+				</select>
+				<input name="move_task" type="submit" value="Assign" />
+		</fieldset>
+	</form>
 </div>
