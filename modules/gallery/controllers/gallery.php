@@ -85,7 +85,7 @@ class Gallery_Controller extends Controller {
 		url::redirect($image->generate_url());
 	}
 	protected function _link_image($gallery) {
-		if(request::is_ajax()) $this->_use_text_errors();
+		if(request::is_ajax()) $this->_use_json_errors();
 		
 		if($gallery->id==0)
 			return View::global_error('Invalid Gallery id');
@@ -133,7 +133,7 @@ class Gallery_Controller extends Controller {
 		)));
 	}
 	protected function _search() {
-		if(request::is_ajax()) $this->_use_text_errors();
+		if(request::is_ajax()) $this->_use_json_errors();
 		$query = $_POST['search'];
 		$images = ORM::factory('image')->like('name',$query)->find_all();
 		$result = array('images'=>array());
@@ -148,7 +148,7 @@ class Gallery_Controller extends Controller {
 		if(request::is_ajax()) die(json_encode($result));
 	}
 	protected function _upload_image($gallery) {
-		if(request::is_ajax()) $this->_use_text_errors();
+		if(request::is_ajax()) $this->_use_json_errors();
 		
 		if($gallery->id==0)
 			return View::global_error('Invalid Gallery id');
@@ -170,7 +170,7 @@ class Gallery_Controller extends Controller {
 		$image = ORM::factory('image');
 		$image->gallery_id = $gallery->id;
 		$image->name = $this->input->post('name');
-		$image->mime = $_FILES['file']['type'];
+		$image->mime = file::mime($_FILES['file']['tmp_name']);
 		$image->description = $_FILES['file']['name'];
 		$image->size = $_FILES['file']['size'];
 		$image->uploaded_on = time();
@@ -188,5 +188,12 @@ class Gallery_Controller extends Controller {
 			return View::global_error('Error generating thumb');
 			
 		$_POST = array();
+		
+		if(request::is_ajax()) die(json_encode(array(
+			'result'=>'OK',
+			'id'=>$image->id,
+			'name'=>$image->name,
+			'url'=>$image->generate_url(),
+		)));
 	}
 }
