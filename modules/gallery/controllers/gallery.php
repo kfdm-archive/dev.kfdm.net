@@ -9,7 +9,7 @@ class Gallery_Controller extends Controller {
 	public function index() {
 		$this->show(0);
 	}
-	public function _client() {
+	protected function _client() {
 		$errors = ($this->_tmpl->is_set('global_errors'))?
 			$this->_tmpl->global_errors:
 			array();
@@ -20,11 +20,11 @@ class Gallery_Controller extends Controller {
 		$this->_tmpl = new View('gallery');
 		
 		$gallery = ORM::factory('gallery',$id);
-		if(isset($_POST['upload_image'])) $this->_upload_image($gallery);
-		if(isset($_POST['link_image'])) $this->_link_image($gallery);
+		if(isset($_POST['upload_image'])) $this->_image_upload($gallery);
+		if(isset($_POST['link_image'])) $this->_image_link($gallery);
 		if(isset($_POST['search'])) $this->_search($gallery);
-		if(isset($_POST['new_sub_gallery'])) $this->_new_gallery($gallery);
-		if(isset($_POST['delete_gallery'])) $this->_delete_gallery($gallery);
+		if(isset($_POST['new_sub_gallery'])) $this->_gallery_create($gallery);
+		if(isset($_POST['delete_gallery'])) $this->_gallery_delete($gallery);
 		if(request::is_ajax()) $this->_client(); //Done with possible ajax calls
 		
 		$subgalleries = $gallery->sub_galleries();
@@ -48,18 +48,18 @@ class Gallery_Controller extends Controller {
 		if(!is_numeric($id)) throw new Exception('INVALID ID');
 		$image = ORM::factory('image',$id);
 		$gallery = $image->parent_gallery();
-		if(isset($_POST['rotate_left'])) $this->_rotate($image,-90);
-		if(isset($_POST['rotate_right'])) $this->_rotate($image,90);
+		if(isset($_POST['rotate_left'])) $this->_image_rotate($image,-90);
+		if(isset($_POST['rotate_right'])) $this->_image_rotate($image,90);
 		
-		if(isset($_POST['edit_image'])) $this->_edit_image($image,$gallery);
-		if(isset($_POST['delete_image'])) $this->_delete_image($image,$gallery);
+		if(isset($_POST['edit_image'])) $this->_image_edit($image,$gallery);
+		if(isset($_POST['delete_image'])) $this->_image_delete($image,$gallery);
 		
 		$t = new View('image');
 		$t->set('gallery',$gallery);
 		$t->set('image',$image);
 		$t->render(TRUE);
 	}
-	protected function _new_gallery($parent) {
+	protected function _gallery_create($parent) {
 		if(isset($_POST['username']) && isset($_POST['password']))
 			Auth::instance()->login($_POST['username'],$_POST['password']);
 		if(!Auth::instance()->logged_in('gallery_create'))
@@ -79,7 +79,7 @@ class Gallery_Controller extends Controller {
 			
 		url::redirect($gallery->generate_url());
 	}
-	protected function _delete_gallery($gallery) {
+	protected function _gallery_delete($gallery) {
 		if(isset($_POST['username']) && isset($_POST['password']))
 			Auth::instance()->login($_POST['username'],$_POST['password']);
 		if(!Auth::instance()->logged_in('gallery_delete'))
@@ -93,14 +93,14 @@ class Gallery_Controller extends Controller {
 		url::redirect($parent->generate_url());
 		return View::global_error('DELETING GALLERY '.$gallery->name);
 	}
-	protected function _rotate($image,$degrees) {
+	protected function _image_rotate($image,$degrees) {
 		if(isset($_POST['username']) && isset($_POST['password']))
 			Auth::instance()->login($_POST['username'],$_POST['password']);
 		if(!Auth::instance()->logged_in('login'))
 			return View::global_error('Image rotate requires login');
 		$image->rotate($degrees);
 	}
-	protected function _edit_image($image) {
+	protected function _image_edit($image) {
 		if(isset($_POST['username']) && isset($_POST['password']))
 			Auth::instance()->login($_POST['username'],$_POST['password']);
 		if(!Auth::instance()->logged_in('login'))
@@ -115,7 +115,7 @@ class Gallery_Controller extends Controller {
 		if(!$image->save())
 			return View::global_error('Error saving');
 	}
-	protected function _delete_image($image) {
+	protected function _image_delete($image) {
 		if(isset($_POST['username']) && isset($_POST['password']))
 			Auth::instance()->login($_POST['username'],$_POST['password']);
 		if(!Auth::instance()->logged_in('login'))
@@ -138,7 +138,7 @@ class Gallery_Controller extends Controller {
 		)));
 		url::redirect($image->generate_url());
 	}
-	protected function _link_image($gallery) {
+	protected function _image_link($gallery) {
 		if(request::is_ajax()) $this->_use_json_errors();
 		
 		if($gallery->id==0)
@@ -201,7 +201,7 @@ class Gallery_Controller extends Controller {
 		$result['count'] = count($result['images']);
 		if(request::is_ajax()) die(json_encode($result));
 	}
-	protected function _upload_image($gallery) {
+	protected function _image_upload($gallery) {
 		if(request::is_ajax()) $this->_use_json_errors();
 		
 		if($gallery->id==0)
