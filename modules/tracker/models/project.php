@@ -3,6 +3,6 @@
 class Project_Model extends ORM {
 	protected $has_many = array('tasks');
 	public function generate_url() {
-		return url::site('/tracker/');
+		return url::site('/tracker/project/'.$this->id);
 	}
 }
