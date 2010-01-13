@@ -2,6 +2,7 @@
 
 class Image_Model extends ORM {
 	public function generate_url() {
+		if($this->id==0) return '/gallery/';
 		return url::site('/gallery/view/'.$this->id);
 	}
 	public function parent_gallery() {
@@ -37,6 +38,18 @@ class Image_Model extends ORM {
 			default:
 				return '';
 		}
+	}
+	public function prev() {
+		return ORM::factory('image')->where(array(
+			'gallery_id'=>$this->gallery_id, //Same gallery
+			'id<'=>$this->id, //Lower ID
+		))->orderby('id','DESC')->find();
+	}
+	public function next() {
+		return ORM::factory('image')->where(array(
+			'gallery_id'=>$this->gallery_id, //Same gallery
+			'id>'=>$this->id, //Higher ID
+		))->orderby('id','ASC')->find();
 	}
 	public function rotate($degrees) {
 		$image = new Image($this->get_image_path());

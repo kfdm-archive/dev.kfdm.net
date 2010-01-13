@@ -10,6 +10,19 @@
 	<li><a href="<?=$image->generate_url()?>"><?=$image->name?></a></li>
 </ul>
 <hr />
+<?php 
+	$prev = $image->prev();
+	$next = $image->next();
+?>
+<div>
+<?php if($prev->id):?>
+	<a style="float:left" href="<?=$prev->generate_url()?>" title="<?=htmlentities($prev->name)?>">Prev</a>
+<?php endif;?>
+<?php if($next->id):?>
+	<a style="float:right" href="<?=$next->generate_url()?>" title="<?=htmlentities($next->name)?>">Next</a>
+<?php endif;?>
+	<div style="clear:both;"></div>
+</div>
 <dl>
 	<dt>Name:</dt>
 	<dd><?=$image->name?></dd>
