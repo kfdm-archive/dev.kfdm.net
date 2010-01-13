@@ -55,6 +55,7 @@ class Gallery_Controller extends Controller {
 		if(isset($_POST['delete_image'])) $this->_image_delete($image,$gallery);
 		if(isset($_POST['move_image'])) $this->_image_move($image,$gallery);
 		if(isset($_POST['default_image'])) $this->_image_default($image,$gallery);
+		if(request::is_ajax()) $this->_client(); //Done with possible ajax calls
 		
 		$t = new View('image');
 		$t->set('gallery',$gallery);
@@ -101,10 +102,17 @@ class Gallery_Controller extends Controller {
 	 * @return unknown_type
 	 */
 	protected function _gallery_select($current) {
+		$cache = Cache::instance();
+		$key = '_gallery_select';
+		$galleries = $cache->get($key);
+		if(is_array($galleries)) return $galleries;
+		
 		$galleries = array();
 		$galleries[0] = 'root';
 		foreach($this->_gallery_select_helper(ORM::factory('gallery'),1) as $k=>$v)
 				$galleries[$k] = $v;
+				
+		$cache->set($key,$galleries);
 		return $galleries;
 	}
 	protected function _gallery_select_helper($current,$tab) {
