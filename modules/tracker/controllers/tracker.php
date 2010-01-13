@@ -93,12 +93,12 @@ class Tracker_Controller extends Controller {
 			return View::global_error('Lacks Task Assign Permissions');
 		if(!is_numeric($this->input->post('project')))
 			return View::global_error('Invalid Project ID');
-		$old = $task->project_class();
+		$old = $task->parent_project();
 		$task->project_id = $_POST['project'];
 		if(!$task->save())
 			return View::global_error('Error saving task');
 		$old->recalculate();
-		$task->project_class()->recalculate();
+		$task->parent_project()->recalculate();
 	}
 	public function report() {
 		if(isset($_POST['username']) && isset($_POST['password']))
