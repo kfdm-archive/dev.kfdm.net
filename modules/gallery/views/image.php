@@ -27,7 +27,7 @@
 	<dt>Name:</dt>
 	<dd><?=$image->name?></dd>
 	<dt>Image:</dt>
-	<dd><img class="image" src="<?=$image->image()?>" alt="<?=$image->name?>" /></dd>
+	<dd><a href="<?=$image->image()?>"><img class="image" src="<?=$image->image()?>" alt="<?=$image->name?>" /></a></dd>
 	<dt>Description:</dt>
 	<dd><?=$image->description?></dd>
 </dl>
