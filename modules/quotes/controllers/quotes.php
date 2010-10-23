@@ -21,7 +21,7 @@ class Quotes_Controller extends Controller {
 		if(request::is_ajax()) die(); //Done with possible ajax calls
 		
 		$pagination = new Pagination(array(
-			//'base_url'=>'quotes/latest/page',
+			'base_url'=>"quotes/{$order}/page",
 			'uri_segment'=>'page',
 			'total_items'=>ORM::factory('quote')->count_all(),
 			'items_per_page'=>self::num_per_page,
