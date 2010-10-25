@@ -58,7 +58,8 @@ class Gallery_Model extends ORM {
 	public function sub_galleries() {
 		return ORM::factory('gallery')->where('parent',$this->id)->find_all();
 	}
-	public function delete() {
+	public function delete($id = NULL) {
+		if($id!==NULL) throw new Exception();
 		foreach($this->sub_galleries() as $gallery)
 			if(!$gallery->delete())
 				throw new Exception('ERROR DELETING Gallery:'.$gallery->id);
