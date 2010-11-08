@@ -85,7 +85,7 @@ class Image_Model extends ORM {
 	public function replace_uploaded_file($path) {
 		return copy($path,$this->get_image_path());
 	}
-	public function delete() {
+	public function delete($id = NULL) {
 		$image = $this->get_image_path();
 		if(is_file($image)) unlink($image);
 		$thumb = $this->get_thumb_path();
