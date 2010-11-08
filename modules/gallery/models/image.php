@@ -24,7 +24,7 @@ class Image_Model extends ORM {
 		$path .= $this->mime();
 		return $path;
 	}
-	public function validate() {
+	public function validate(Validation $array, $save = FALSE) {
 		return TRUE;
 	}
 	public function mime() {
